@@ -8,6 +8,15 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from src.ai_assistant import AIAssistant, CANDIDATE_SUMMARY
 
+REQUIRED_SUMMARY_TRAIT_ID = (
+    "Mampu bekerja sama dalam tim, mudah beradaptasi dengan lingkungan dan tantangan baru, "
+    "serta berkomitmen untuk bekerja secara profesional dan bertanggung jawab dalam menjalankan setiap tugas dan kewajiban."
+)
+REQUIRED_SUMMARY_TRAIT_EN = (
+    "Demonstrated ability to collaborate effectively in teams, adapt seamlessly to new environments and challenges, "
+    "and maintain a steadfast commitment to professionalism and accountability in executing all duties and responsibilities."
+)
+
 class ResumeTailor:
     def __init__(self, output_dir: str = "tailored_resumes", api_key: Optional[str] = None):
         self.output_dir = os.path.abspath(output_dir)
@@ -17,12 +26,18 @@ class ResumeTailor:
     def extract_keywords_and_summary(self, company: str, position: str, job_description: str, lang: str = "id") -> Dict[str, Any]:
         """Ekstrak exact keywords ATS dan buat ringkasan profil yang disesuaikan via Gemini."""
         if not self.ai.api_key or not job_description:
+            summary_id = f"Full-Stack Developer dengan spesialisasi pengembangan web modern, arsitektur REST API, dan integrasi Artificial Intelligence (LLM). {REQUIRED_SUMMARY_TRAIT_ID}"
+            summary_en = f"Full-Stack Developer specializing in modern web development, REST APIs, and Artificial Intelligence (LLM) integration. {REQUIRED_SUMMARY_TRAIT_EN}"
             return {
                 "keywords": ["Python", "REST API", "Full-Stack Development", "LLM Integration", "Git"],
-                "summary": "Full-Stack Developer dengan spesialisasi pengembangan web modern, arsitektur REST API, dan integrasi Artificial Intelligence (LLM). Terbiasa membangun solusi perangkat lunak modular dan berkinerja tinggi."
+                "summary": summary_id if lang == "id" else summary_en
             }
 
-        lang_instruction = "Gunakan Bahasa Indonesia formal." if lang == "id" else "Write in professional English."
+        lang_instruction = (
+            f'Gunakan Bahasa Indonesia formal. WAJIB sertakan unsur/kalimat: "{REQUIRED_SUMMARY_TRAIT_ID}"'
+            if lang == "id"
+            else f'Write in professional English. MUST include the trait: "{REQUIRED_SUMMARY_TRAIT_EN}"'
+        )
         prompt = f"""
 Profil Kandidat:
 {CANDIDATE_SUMMARY}
@@ -46,15 +61,25 @@ Kembalikan HANYA format JSON valid tanpa format markdown:
             clean = re.sub(r"^```json\s*|\s*```$", "", raw.strip(), flags=re.MULTILINE)
             return json.loads(clean)
         except Exception:
+            summary_id = f"Software Engineer dengan rekam jejak pengembangan sistem AI dan web full-stack, siap berkontribusi untuk posisi {position} di {company}. {REQUIRED_SUMMARY_TRAIT_ID}"
+            summary_en = f"Software Engineer with a track record in AI systems and full-stack web development, ready to contribute to {position} at {company}. {REQUIRED_SUMMARY_TRAIT_EN}"
             return {
                 "keywords": ["Python", "Full-Stack Development", "REST API", "AI Systems", "CI/CD"],
-                "summary": f"Software Engineer dengan rekam jejak pengembangan sistem AI dan web full-stack, siap berkontribusi untuk posisi {position} di {company}."
+                "summary": summary_id if lang == "id" else summary_en
             }
 
     def build_tailored_resume(self, company: str, position: str, job_description: str = "", lang: str = "id") -> str:
         data = self.extract_keywords_and_summary(company, position, job_description, lang=lang)
         keywords = data.get("keywords", [])
         summary_text = data.get("summary", "")
+
+        # Jamin unsur kerja sama tim, adaptasi, dan komitmen profesional selalu hadir di summary
+        if lang == "id":
+            if "bekerja sama dalam tim" not in summary_text.lower():
+                summary_text = summary_text.strip().rstrip(".") + f". {REQUIRED_SUMMARY_TRAIT_ID}"
+        else:
+            if "collaborate" not in summary_text.lower() and "team" not in summary_text.lower():
+                summary_text = summary_text.strip().rstrip(".") + f". {REQUIRED_SUMMARY_TRAIT_EN}"
 
         safe_comp = re.sub(r"[^a-zA-Z0-9_-]", "_", company.title())[:20].strip("_")
         safe_pos = re.sub(r"[^a-zA-Z0-9_-]", "_", position.title())[:20].strip("_")

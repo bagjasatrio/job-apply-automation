@@ -7,6 +7,7 @@ import requests
 CANDIDATE_PROFILE = """
 Nama: Muhammad Bagja Satrio
 Pendidikan: S1 Teknik Informatika (Universitas Dian Nuswantoro), GPA 3.29.
+Karakter & Etos Kerja: Mampu bekerja sama dalam tim, mudah beradaptasi dengan lingkungan dan tantangan baru, serta berkomitmen untuk bekerja secara profesional dan bertanggung jawab dalam menjalankan setiap tugas dan kewajiban.
 Keahlian & Pengalaman:
 - Full-Stack Web Development: Python, Flask, Laravel/PHP, REST API, modular UI, PostgreSQL/MySQL, responsive UI (Diskominfo Kota Semarang).
 - AI & LLM Engineering: Multi-provider Universal LLM Gateway (OpenAI, OpenRouter, Groq, Gemini), prompt engineering, ATS matching (CVKita).

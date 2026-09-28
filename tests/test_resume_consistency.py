@@ -45,3 +45,19 @@ def test_email_styler_language_consistency_indonesian():
     assert "Buka Website Portofolio" in html
     assert "Target Position:" not in html
     assert "View Portfolio Website" not in html
+
+def test_resume_summary_maintains_required_trait_id():
+    tailor = ResumeTailor()
+    res = tailor.extract_keywords_and_summary("PT Nusantara", "Fullstack Developer", "", lang="id")
+    summary = res["summary"]
+    assert "Mampu bekerja sama dalam tim" in summary
+    assert "mudah beradaptasi dengan lingkungan dan tantangan baru" in summary
+    assert "berkomitmen untuk bekerja secara profesional dan bertanggung jawab" in summary
+
+def test_resume_summary_maintains_required_trait_en():
+    tailor = ResumeTailor()
+    res = tailor.extract_keywords_and_summary("Global Systems", "Software Engineer", "", lang="en")
+    summary = res["summary"]
+    assert "collaborate" in summary.lower() or "team" in summary.lower()
+    assert "adapt" in summary.lower()
+
