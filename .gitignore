@@ -1,0 +1,22 @@
+# Virtual Environment
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Secrets & Credentials (JANGAN PERNAH DI-COMMIT)
+.env
+*.env
+credentials.json
+.last_sent_timestamp
+
+# Data Pribadi & Riwayat Pelamaran
+*.csv
+*.pdf
+backups/
+interviews/
+tailored_resumes/
+browser_session/
+*.log
+seen_leads.json
+src/seen_leads.json

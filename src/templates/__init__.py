@@ -1,0 +1,1 @@
+"""Email styling templates package."""
